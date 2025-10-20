@@ -1,11 +1,11 @@
 # garbage collector from scratch (python)
 
 ## phase 1 -> setup
-- [ ] initialize repo and directory layout
-- [ ] add basic readme and license
-- [ ] implement rc_gc.py -> reference counting collector
-- [ ] add smoke tests for rc_gc
-- [ ] show cycle leak in rc_gc example
+- [x] initialize repo and directory layout
+- [x] add basic readme and license
+- [x] implement rc_gc.py -> reference counting collector
+- [x] add smoke tests for rc_gc
+- [x] show cycle leak in rc_gc example
 
 ## phase 2 -> mark and sweep
 - [ ] create ms_gc.py -> mark and sweep collector
