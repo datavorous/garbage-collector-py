@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 from typing import Dict, Optional, Any, Set
 import itertools
 
+
 @dataclass
 class _Obj:
     id: int
@@ -35,13 +36,14 @@ class ReferenceCountingGC:
         # "root" objects, these are protected from garbage collection
         self.roots: Set[int] = set()
 
+
     def alloc(self, value: Optional[Any] = None) -> ObjectRef:
         # get new counter id, build new instance, push to heap
         oid = next(self._next_id)
         obj = _Obj(
                 id=oid,
                 value=value,
-                refcount=0, 3 # nobody references it yet, so sad :(
+                refcount=0, # nobody references it yet, so sad :(
                 fields={}, # neither is it referenced by other objects
                 freed=False # it means the object is alive
             )
@@ -49,16 +51,19 @@ class ReferenceCountingGC:
 
         return ObjectRef(obj)
 
+
     def _get_obj(self, obj_ref: Optional[ObjectRef]) -> Optional[_Obj]:
         if obj_ref is None:
             return None
         return obj_ref._obj
+
 
     def incref(self, obj_ref: Optional[ObjectRef]) -> None:
         obj = self._get_obj(obj_ref)
         if obj is None or obj.freed:
             return
         obj.refcount += 1
+
 
     def decref(self, obj_ref: Optional[ObjectRef]) -> None:
         obj = self._get_obj(obj_ref)
@@ -67,6 +72,7 @@ class ReferenceCountingGC:
         obj.refcount -= 1
         if obj.refcount <= 0:
             self._free(obj)
+
 
     def _free(self, obj: _Obj) -> None:
         # helps to deallocate an object from memory
@@ -103,7 +109,7 @@ class ReferenceCountingGC:
         parent = self._get_obj(parent_ref)
         if parent is None or parent.freed:
             # print("Setting field on freed or non existent parent")
-            raise CustomError("Setting field on freed or non existent parent.")
+            raise RuntimeError("Setting field on freed or non existent parent.")
 
         old_child_ref = parent.fields.get(field_name)
         if old_child_ref is new_child_ref:
@@ -120,6 +126,7 @@ class ReferenceCountingGC:
 
         if old_child_ref is not None:
             self.decref(old_child_ref)
+
 
     def add_root(self, obj_ref: ObjectRef) -> None:
         obj = self._get_obj(obj_ref)
@@ -149,5 +156,4 @@ class ReferenceCountingGC:
         for oid in sorted(self.heap):
             lines.append(repr(self.heap[oid]))
         return "\n".join(lines)
-
 

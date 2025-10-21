@@ -28,7 +28,6 @@ test_acyclic()
 
 
 def smoke_test_cycle():
-    # LLM slop:
     print("SMOKE: cycle demo -> RC should NOT collect the cycle automatically")
     gc = ReferenceCountingGC()
     a = gc.alloc("A")

@@ -164,4 +164,51 @@ root set - the set of references the program holds (variable). if no path from a
 reachable - an object is reachable if there exists a path of references from any root to that object
 
 reference counting (RC) each object tracks how many incoming referneces it has (a small integer)
-weh nit hits 0 we free it (and recursively adjust children)
+when it hits 0 we free it (and recursively adjust children)
+
+```python
+gc = ReferenceCountingGC()
+
+HEAP = empty {}
+ROOT = empty set()
+
+ref_a = gc.alloc("Alice")
+> alloc() generates a new ID (1)
+> creates _Obj(id=1, value="Alice", refcount=0, fields={})
+> Stores in heap: heap[1] = _Obj()#1
+> returns  ObjectRef pointing to it
+
+HEAP = {1: _Obj() (val="Alice", rc=0) #1
+ROOTS = {}
+
+ref_a --> _Obj#1 -> refcount: 0 (not protected yet)
+
+gc.add_root(ref_a)
+> Adds '1' to 'roots' set
+> calls incref(ref_a) -> _Obj #1.refcount +=1
+
+HEAP: {1: _Obj} #1 (val='Alice', rc=1)
+ROOTS: {1}
+ref_a -> _Obj #1 refcount: 1 (protected)
+
+similarly,
+ref_b = gc.alloc("Bob")
+gc.set_field(ref_a, "friend", ref_b)
+> new child gets incremented
+> link is created
+
+parent.fields["friend"] = ref_b
+
+HEAP: {
+	1: _Obj #1 (val="Alice", rc=1, fields={friend -> #2}),
+	2: _Obj #2 (val='Bob', rc=1)
+}
+ROOTS: {1}
+ref_a -> _Obj #1 -- friend --> _Obj #2 <-ref_b>
+		rc = 1					rc = 1
+```
+# mark and sweep
+
+
+
+
