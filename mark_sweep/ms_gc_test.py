@@ -1,7 +1,7 @@
 from ms_gc import MarkSweepGC
 
 gc = MarkSweepGC()
-'''
+"""
 obj_a = gc.alloc("Node A")
 obj_b = gc.alloc("Node B")
 obj_c = gc.alloc("Node C")
@@ -28,7 +28,7 @@ print(gc.heap_snapshot())
 
 gc.gc()
 print(gc.heap_snapshot())
-'''
+"""
 node_a = gc.alloc("A")
 node_b = gc.alloc("B")
 node_c = gc.alloc("C")

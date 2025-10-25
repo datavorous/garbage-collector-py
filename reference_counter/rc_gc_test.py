@@ -1,12 +1,13 @@
 from rc_gc import ReferenceCountingGC
 
-'''
+"""
 gc = ReferenceCountingGC()
 a = gc.alloc("A")
 b = gc.alloc("B")
 print("after allocations (refcount=0 until we add roots): ")
 print(gc.heap_snapshot())
-'''
+"""
+
 
 def test_acyclic():
     print("acyclic chain: should be reclaimed when root removed")
@@ -23,6 +24,7 @@ def test_acyclic():
     gc.remove_root(root)
     print(gc.heap_snapshot())
     print("-" * 60)
+
 
 test_acyclic()
 
@@ -54,5 +56,6 @@ def smoke_test_cycle():
     print("After manual break (expected: objects reclaimed):")
     print(gc.heap_snapshot())
     print("-" * 60)
+
 
 smoke_test_cycle()

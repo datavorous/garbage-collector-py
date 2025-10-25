@@ -12,7 +12,7 @@ class _Obj:
     freed: bool = False
 
     def __repr__(self):
-        flds = [f"{k} -> #{v._obj.id}" for k,v in self.fields.items()]
+        flds = [f"{k} -> #{v._obj.id}" for k, v in self.fields.items()]
         return f"_Obj #{self.id} (val={self.value!r}, rc={self.refcount}), fields={flds}, freed={self.freed}"
 
 
@@ -36,34 +36,30 @@ class ReferenceCountingGC:
         # "root" objects, these are protected from garbage collection
         self.roots: Set[int] = set()
 
-
     def alloc(self, value: Optional[Any] = None) -> ObjectRef:
         # get new counter id, build new instance, push to heap
         oid = next(self._next_id)
         obj = _Obj(
-                id=oid,
-                value=value,
-                refcount=0, # nobody references it yet, so sad :(
-                fields={}, # neither is it referenced by other objects
-                freed=False # it means the object is alive
-            )
+            id=oid,
+            value=value,
+            refcount=0,  # nobody references it yet, so sad :(
+            fields={},  # neither is it referenced by other objects
+            freed=False,  # it means the object is alive
+        )
         self.heap[oid] = obj
 
         return ObjectRef(obj)
-
 
     def _get_obj(self, obj_ref: Optional[ObjectRef]) -> Optional[_Obj]:
         if obj_ref is None:
             return None
         return obj_ref._obj
 
-
     def incref(self, obj_ref: Optional[ObjectRef]) -> None:
         obj = self._get_obj(obj_ref)
         if obj is None or obj.freed:
             return
         obj.refcount += 1
-
 
     def decref(self, obj_ref: Optional[ObjectRef]) -> None:
         obj = self._get_obj(obj_ref)
@@ -72,7 +68,6 @@ class ReferenceCountingGC:
         obj.refcount -= 1
         if obj.refcount <= 0:
             self._free(obj)
-
 
     def _free(self, obj: _Obj) -> None:
         # helps to deallocate an object from memory
@@ -95,7 +90,6 @@ class ReferenceCountingGC:
         for child_ref in children:
             self.decref(child_ref)
 
-
         if obj.id in self.heap:
             # we remove the object from memory, it's gone for ever.
             # fly me to the moon
@@ -104,7 +98,9 @@ class ReferenceCountingGC:
             # on a jupiter and mars
             del self.heap[obj.id]
 
-    def set_field(self, parent_ref: ObjectRef, field_name: str, new_child_ref: Optional[ObjectRef]) -> None:
+    def set_field(
+        self, parent_ref: ObjectRef, field_name: str, new_child_ref: Optional[ObjectRef]
+    ) -> None:
         # set a field on a parent obj to point to a child obj
         parent = self._get_obj(parent_ref)
         if parent is None or parent.freed:
@@ -117,7 +113,6 @@ class ReferenceCountingGC:
         if new_child_ref is not None:
             self.incref(new_child_ref)
 
-
         if new_child_ref is None:
             if field_name in parent.fields:
                 del parent.fields[field_name]
@@ -126,7 +121,6 @@ class ReferenceCountingGC:
 
         if old_child_ref is not None:
             self.decref(old_child_ref)
-
 
     def add_root(self, obj_ref: ObjectRef) -> None:
         obj = self._get_obj(obj_ref)
@@ -139,7 +133,6 @@ class ReferenceCountingGC:
         self.roots.add(obj.id)
         self.incref(obj_ref)
 
-
     def remove_root(self, obj_ref: ObjectRef) -> None:
         obj = self._get_obj(obj_ref)
         if obj is None or obj.freed:
@@ -150,10 +143,8 @@ class ReferenceCountingGC:
         self.roots.remove(obj.id)
         self.decref(obj_ref)
 
-
     def heap_snapshot(self) -> str:
         lines = [f"HEAP size={len(self.heap)}, ROOTS={sorted(list(self.roots))}"]
         for oid in sorted(self.heap):
             lines.append(repr(self.heap[oid]))
         return "\n".join(lines)
-

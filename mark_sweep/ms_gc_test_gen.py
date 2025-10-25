@@ -1,9 +1,11 @@
 from ms_gc import MarkSweepGC
 
+
 def print_section(title):
     print(f"\n{'='*60}")
     print(f"  {title}")
-    print('='*60)
+    print("=" * 60)
+
 
 def test_basic_allocation():
     print_section("TEST 1: Basic Allocation")
@@ -44,6 +46,7 @@ def test_basic_allocation():
     print("\n7. After third GC - obj_a, obj_b, obj_c promoted to old generation:")
     print(gc.heap_snapshot())
 
+
 def test_circular_references():
     print_section("TEST 2: Circular References")
     gc = MarkSweepGC()
@@ -74,6 +77,7 @@ def test_circular_references():
     print("\n3. After GC - orphan cycle collected, rooted cycle survives:")
     print(gc.heap_snapshot())
 
+
 def test_promotion():
     print_section("TEST 3: Generational Promotion")
     gc = MarkSweepGC()
@@ -89,6 +93,7 @@ def test_promotion():
         print(f"\n2.{i+1}. After GC #{i+1}:")
         print(gc.heap_snapshot())
         print(f"     (age increments, promotion happens at age >= 2)")
+
 
 def test_old_to_young_references():
     print_section("TEST 4: Old->Young References (Card Table)")
@@ -117,6 +122,7 @@ def test_old_to_young_references():
     print("\n4. After minor GC - young object kept alive by old object:")
     print(gc.heap_snapshot())
 
+
 def test_full_gc_trigger():
     print_section("TEST 5: Full GC Trigger (every 8 minor GCs)")
     gc = MarkSweepGC()
@@ -128,10 +134,13 @@ def test_full_gc_trigger():
     for i in range(10):
         temp = gc.alloc(f"Temp_{i}")
         gc.gc()
-        print(f"   GC #{i+1}: minor_gc_count={gc._minor_gc_count}, "
-              f"young={len(gc.young)}, old={len(gc.old)}")
+        print(
+            f"   GC #{i+1}: minor_gc_count={gc._minor_gc_count}, "
+            f"young={len(gc.young)}, old={len(gc.old)}"
+        )
         if i == 7:
             print("   ^^^ Full GC triggered (count % 8 == 0)")
+
 
 def test_root_management():
     print_section("TEST 6: Root Management")
@@ -158,10 +167,11 @@ def test_root_management():
     print("\n4. After GC - obj_b should be collected:")
     print(gc.heap_snapshot())
 
+
 if __name__ == "__main__":
-    print("\n" + "█"*60)
+    print("\n" + "█" * 60)
     print("  GENERATIONAL MARK-AND-SWEEP GC TEST SUITE")
-    print("█"*60)
+    print("█" * 60)
 
     test_basic_allocation()
     test_circular_references()
@@ -170,6 +180,6 @@ if __name__ == "__main__":
     test_full_gc_trigger()
     test_root_management()
 
-    print("\n" + "█"*60)
+    print("\n" + "█" * 60)
     print("  ALL TESTS COMPLETED")
-    print("█"*60 + "\n")
+    print("█" * 60 + "\n")
