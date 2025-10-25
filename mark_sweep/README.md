@@ -10,21 +10,30 @@ This garbage collector automates memory management by:
 ### 1. `_Obj`
 
 This is like a node in a graph
+
 a. `id`: unique identifier
+
 b. `value`: the actual data stored
+
 c. `fields`: references to OTHER objects (like links in a graph)
+
 d. `marked`: used during GC to track 'I have been visited'
+
 e. `freed`: tracks if this object has been deleted
 
-### 2. `ObjectRed`
+
+### 2. `ObjectRef`
 
 A wrapper that lets us safely reference objects. Nothing serious.
 
 ### 3. MarkSweepGC
 
 This is the main class for memory management.
+
 a. `heap`: where all objects live (dictionary: id -> object)
+
 b. `roots`: objects that must NOT be garbage collected
+
 
 ## Example
 
@@ -52,8 +61,11 @@ _Obj #3 (val='Node C', marked=False, freed=False, fields=[])
 _Obj #4 (val='Node D', marked=False, freed=False, fields=[])
 ```
 4 objects have been allocated, and each has got a unique ID (1,2,3,4)
+
 No roots yet, that means everything is eligible for garbage collection.
+
 NO fields yet too, so objects are all isolated.
+
 
 ### Building Graph Structure
 

@@ -24,10 +24,10 @@
 - [ ] implement tracer api -> object.trace(visitor)
 - [ ] refactor rc and ms to use tracer
 - [ ] add semi-space copying collector -> young generation
-- [ ] implement generational scheme -> young/old separation
-- [ ] add promotion policy -> survive N collections -> promote
+- [x] implement generational scheme -> young/old separation
+- [x] add promotion policy -> survive N collections -> promote
 - [ ] implement compaction -> forwarding pointers
-- [ ] add write barrier -> old to young references
+- [x] add write barrier -> old to young references
 
 ## phase 5 -> advanced exploration
 - [ ] simulate incremental marking -> tri-color abstraction
